@@ -1,0 +1,19 @@
+---
+import type { BscpTopic } from "@/data/bscp";
+import SidebarBrand from "@/components/SidebarBrand.astro";
+import SidebarFooter from "@/components/SidebarFooter.astro";
+import BscpSidebarNav from "@/components/bscp/BscpSidebarNav.astro";
+
+interface Props {
+  topics: BscpTopic[];
+}
+
+const { topics } = Astro.props;
+---
+
+<aside data-sidebar aria-label="Topics and account" class="flex flex-col border-r border-default bg-surface">
+  <SidebarBrand shortName="BSCP" subtitle="Lab Tracker" />
+  <BscpSidebarNav topics={topics} />
+  <SidebarFooter />
+</aside>
+<div id="drawerBackdrop" aria-hidden="true"></div>

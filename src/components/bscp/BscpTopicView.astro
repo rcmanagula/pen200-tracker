@@ -1,0 +1,55 @@
+---
+import type { BscpTopic } from "@/data/bscp";
+import BscpLabRow from "@/components/bscp/BscpLabRow.astro";
+
+interface Props {
+  topic: BscpTopic;
+}
+
+const { topic } = Astro.props;
+---
+
+<section
+  class="border-b border-default py-4 last:border-b-0"
+  data-bscp-topic={topic.id}
+>
+  <button
+    type="button"
+    class="flex w-full items-center gap-3 rounded-md px-2 py-2 text-left transition-colors hover:bg-surface-2"
+    aria-expanded="false"
+    data-bscp-topic-toggle={topic.id}
+  >
+    <svg
+      aria-hidden="true"
+      viewBox="0 0 24 24"
+      width="16"
+      height="16"
+      class="shrink-0 text-fg-muted transition-transform"
+      data-bscp-topic-chevron={topic.id}
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    >
+      <path d="m6 9 6 6 6-6" />
+    </svg>
+    <span class="grid flex-1 gap-1">
+      <span class="text-h3 font-semibold text-fg-default">{topic.name}</span>
+      <span class="h-1.5 overflow-hidden rounded-full bg-surface-2">
+        <span
+          class="block h-full rounded-full bg-accent transition-[width] duration-300"
+          style="width: 0%"
+          data-bscp-topic-bar={topic.id}
+        ></span>
+      </span>
+    </span>
+    <span class="font-mono text-tiny text-fg-muted" data-bscp-topic-count={topic.id}>0/{topic.labs.length}</span>
+  </button>
+
+  <div class="hidden pt-3" data-bscp-topic-body={topic.id}>
+    <div class="grid gap-0">
+      {topic.labs.map((lab, index) => <BscpLabRow lab={lab} index={index} />)}
+    </div>
+  </div>
+</section>

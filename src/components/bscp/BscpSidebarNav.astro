@@ -1,0 +1,38 @@
+---
+import type { BscpTopic } from "@/data/bscp";
+
+interface Props {
+  topics: BscpTopic[];
+}
+
+const { topics } = Astro.props;
+---
+
+<nav aria-label="BSCP topics" class="flex-1 overflow-y-auto py-3">
+  <div class="px-4 pb-1.5 pt-2 text-tiny font-semibold uppercase tracking-wider text-fg-subtle">
+    Topics
+  </div>
+  <ul class="m-0 list-none p-0">
+    {topics.map((topic) => (
+      <li>
+        <button
+          type="button"
+          class="grid w-full gap-1 px-4 py-2 text-left transition-colors hover:bg-surface-2"
+          data-bscp-nav-item={topic.id}
+        >
+          <span class="flex items-center justify-between gap-2">
+            <span class="text-small text-fg-default">{topic.name}</span>
+            <span class="font-mono text-tiny text-fg-muted">{topic.labs.length}</span>
+          </span>
+          <span class="h-1 overflow-hidden rounded-full bg-surface-2">
+            <span
+              class="block h-full rounded-full bg-accent transition-[width] duration-300"
+              style="width: 0%"
+              data-bscp-nav-bar={topic.id}
+            ></span>
+          </span>
+        </button>
+      </li>
+    ))}
+  </ul>
+</nav>

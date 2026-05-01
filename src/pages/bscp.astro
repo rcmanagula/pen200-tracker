@@ -1,0 +1,20 @@
+---
+import AppShell from "@/components/AppShell.astro";
+import AuthGate from "@/components/AuthGate.astro";
+import Toast from "@/components/Toast.astro";
+import BscpMainPane from "@/components/bscp/BscpMainPane.astro";
+import BscpSidebar from "@/components/bscp/BscpSidebar.astro";
+import { BSCP_TOPICS } from "@/data/bscp";
+---
+
+<AppShell title="BSCP Web Security Academy Tracker">
+  <AuthGate shortName="BSCP" subtitle="Lab Tracker" />
+  <div id="trackerApp" class="app-grid">
+    <BscpSidebar topics={BSCP_TOPICS} />
+    <BscpMainPane topics={BSCP_TOPICS} />
+  </div>
+  <Toast />
+  <script>
+    import "@/lib/bscp_tracker";
+  </script>
+</AppShell>

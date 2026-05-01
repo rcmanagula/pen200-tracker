@@ -1,4 +1,4 @@
-import { getSupabaseClient, type Session, TRACKER_NAME } from "@/lib/supabase";
+import { getSupabaseClient, type Session } from "@/lib/supabase";
 import type { ProgressState } from "@/lib/progress";
 
 type SyncState = "off" | "ok" | "syncing" | "warn" | "error";
@@ -17,16 +17,23 @@ export type CloudSnapshot = {
   updatedAt: string;
 };
 
-export async function loadCloud(session: Session): Promise<CloudSnapshot | null> {
+export async function loadCloud(session: Session, trackerName: string): Promise<CloudSnapshot | null> {
   const client = getSupabaseClient();
   if (!client) return null;
   const { data, error } = await client
     .from("tracker_progress")
     .select("progress,start_date,updated_at")
     .eq("user_id", session.user.id)
-    .eq("tracker_name", TRACKER_NAME)
+    .eq("tracker_name", trackerName)
     .maybeSingle();
-  if (error || !data) return null;
+  if (error) return null;
+  if (!data) {
+    return {
+      progress: {},
+      startDate: "",
+      updatedAt: "",
+    };
+  }
   return {
     progress: (data.progress as ProgressState) ?? {},
     startDate: data.start_date ?? "",
@@ -37,14 +44,15 @@ export async function loadCloud(session: Session): Promise<CloudSnapshot | null>
 export async function saveCloud(
   session: Session,
   progress: ProgressState,
-  startDate: string
+  startDate: string,
+  trackerName: string
 ): Promise<{ ok: boolean; updatedAt?: string }> {
   const client = getSupabaseClient();
   if (!client) return { ok: false };
   const updatedAt = new Date().toISOString();
   const { error } = await client.from("tracker_progress").upsert({
     user_id: session.user.id,
-    tracker_name: TRACKER_NAME,
+    tracker_name: trackerName,
     progress,
     start_date: startDate || null,
     updated_at: updatedAt,

@@ -1,4 +1,10 @@
 ---
+interface Props {
+  shortName?: string;
+  subtitle?: string;
+}
+
+const { shortName = "PEN-200", subtitle = "Progress Tracker" } = Astro.props;
 ---
 
 <header class="px-5 pt-6 pb-5 border-b border-default">
@@ -10,8 +16,8 @@
       </svg>
     </span>
     <div class="leading-tight">
-      <div class="font-display text-h2 text-fg-default">PEN-200</div>
-      <div class="text-tiny text-fg-muted">Progress Tracker</div>
+      <div class="font-display text-h2 text-fg-default">{shortName}</div>
+      <div class="text-tiny text-fg-muted">{subtitle}</div>
     </div>
   </div>
 </header>

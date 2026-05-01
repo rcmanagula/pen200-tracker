@@ -1,35 +1,23 @@
-import { COURSE } from "@/data/course";
-import { videoKey, type ProgressState } from "@/lib/progress";
 import {
-  loadLastSynced,
-  loadLocalUpdatedAt,
-  loadProgress,
-  loadStartDate,
-  saveLastSynced,
-  saveProgress,
-  saveStartDate,
-  touchLocalTimestamp,
-} from "@/lib/storage";
+  BSCP_TOPICS,
+  BSCP_TOTAL_LABS,
+  type LabLevel,
+} from "@/data/bscp";
+import type { ProgressState } from "@/lib/progress";
+import { makeStorageKeys } from "@/lib/storage";
 import { getSupabaseClient, isSupabaseConfigured, type Session } from "@/lib/supabase";
-
-import { initView, getView, onViewChange } from "@/lib/tracker/view";
-import { initTheme } from "@/lib/tracker/theme";
-import { initDrawer } from "@/lib/tracker/drawer";
-import { allValidSlugs } from "@/lib/tracker/modules";
-import { refreshSidebarProgress } from "@/lib/tracker/sidebar";
-import { renderHome } from "@/lib/tracker/home";
-import { refreshAllModules } from "@/lib/tracker/module";
-import { showToast } from "@/lib/tracker/toast";
-import { snapshot } from "@/lib/tracker/undo";
 import { isValidUsername, checkUsername, signIn, signUp, type AuthMode } from "@/lib/tracker/auth";
-import { setSyncState, loadCloud, saveCloud } from "@/lib/tracker/sync";
+import { initDrawer } from "@/lib/tracker/drawer";
+import { loadCloud, saveCloud, setSyncState } from "@/lib/tracker/sync";
+import { initTheme } from "@/lib/tracker/theme";
+import { showToast } from "@/lib/tracker/toast";
 
-const TRACKER_NAME = "pen200";
+const TRACKER_NAME = "bscp";
+const KEYS = makeStorageKeys(TRACKER_NAME);
 
-// ---- State -----------------------------------------------------------------
+type LevelFilter = "all" | LabLevel;
 
 let progress: ProgressState = loadProgress();
-let startDate = loadStartDate();
 let localUpdatedAt = loadLocalUpdatedAt();
 let session: Session | null = null;
 let accountName = "";
@@ -38,35 +26,138 @@ let usernameAvailable: boolean | null = null;
 let usernameTimer: ReturnType<typeof setTimeout> | null = null;
 let syncTimer: ReturnType<typeof setTimeout> | null = null;
 
-// ---- Helpers ---------------------------------------------------------------
-
-function persistProgress(): void {
-  saveProgress(progress);
-  localUpdatedAt = touchLocalTimestamp();
-  queueCloudSave();
-  refresh();
+function loadProgress(): ProgressState {
+  try {
+    const raw = localStorage.getItem(KEYS.progressKey);
+    return raw ? JSON.parse(raw) as ProgressState : {};
+  } catch {
+    return {};
+  }
 }
 
-function persistStart(value: string): void {
-  startDate = value;
-  saveStartDate(value);
-  localUpdatedAt = touchLocalTimestamp();
-  queueCloudSave();
-  refresh();
+function saveProgressLocal(value: ProgressState): void {
+  localStorage.setItem(KEYS.progressKey, JSON.stringify(value));
+}
+
+function loadLocalUpdatedAt(): string {
+  return localStorage.getItem(KEYS.updatedAtKey) || "";
+}
+
+function touchLocalTimestamp(updatedAt = new Date().toISOString()): string {
+  localStorage.setItem(KEYS.updatedAtKey, updatedAt);
+  return updatedAt;
+}
+
+function saveLastSynced(updatedAt: string): void {
+  localStorage.setItem(KEYS.lastSyncedKey, updatedAt);
+}
+
+function setText(node: HTMLElement | null, text: string): void {
+  if (node) node.textContent = text;
+}
+
+function countDone(): number {
+  return Object.values(progress).filter(Boolean).length;
+}
+
+function refreshOverallProgress(): void {
+  const done = countDone();
+  const percent = BSCP_TOTAL_LABS > 0 ? Math.round((done / BSCP_TOTAL_LABS) * 100) : 0;
+  const eyebrowRight = document.querySelector<HTMLElement>("header .font-mono");
+  setText(eyebrowRight, `${done} / ${BSCP_TOTAL_LABS}`);
+  const bar = document.getElementById("bscpOverallBar");
+  if (bar) bar.style.width = `${percent}%`;
+}
+
+function refreshTopicProgress(): void {
+  BSCP_TOPICS.forEach((topic) => {
+    const done = topic.labs.filter((lab) => progress[lab.id]).length;
+    const total = topic.labs.length;
+    const percent = total > 0 ? Math.round((done / total) * 100) : 0;
+    const count = document.querySelector<HTMLElement>(`[data-bscp-topic-count="${topic.id}"]`);
+    const bar = document.querySelector<HTMLElement>(`[data-bscp-topic-bar="${topic.id}"]`);
+    const navBar = document.querySelector<HTMLElement>(`[data-bscp-nav-bar="${topic.id}"]`);
+
+    setText(count, `${done}/${total}`);
+    if (bar) bar.style.width = `${percent}%`;
+    if (navBar) navBar.style.width = `${percent}%`;
+  });
+}
+
+function refreshCheckboxes(): void {
+  document.querySelectorAll<HTMLInputElement>("[data-bscp-checkbox]").forEach((input) => {
+    const key = input.dataset.key;
+    input.checked = Boolean(key && progress[key]);
+  });
 }
 
 function refresh(): void {
-  refreshSidebarProgress(progress);
-  refreshAllModules(progress);
-  renderHome({ progress, startDate });
+  refreshCheckboxes();
+  refreshOverallProgress();
+  refreshTopicProgress();
+}
+
+function persistProgress(): void {
+  saveProgressLocal(progress);
+  localUpdatedAt = touchLocalTimestamp();
+  queueCloudSave();
+  refresh();
+}
+
+function applyFilter(level: LevelFilter): void {
+  document.querySelectorAll<HTMLElement>("[data-bscp-filter]").forEach((button) => {
+    const active = button.dataset.bscpFilter === level;
+    button.classList.toggle("border-accent", active);
+    button.classList.toggle("bg-accent", active);
+    button.classList.toggle("text-on-accent", active);
+    button.classList.toggle("border-default", !active);
+    button.classList.toggle("text-fg-muted", !active);
+  });
+
+  document.querySelectorAll<HTMLElement>("[data-bscp-lab]").forEach((row) => {
+    row.classList.toggle("hidden", level !== "all" && row.dataset.bscpLevel !== level);
+  });
+}
+
+function bindTopicAccordions(): void {
+  document.querySelectorAll<HTMLButtonElement>("[data-bscp-topic-toggle]").forEach((button) => {
+    button.addEventListener("click", () => {
+      const topicId = button.dataset.bscpTopicToggle;
+      if (!topicId) return;
+      const body = document.querySelector<HTMLElement>(`[data-bscp-topic-body="${topicId}"]`);
+      const chevron = document.querySelector<HTMLElement>(`[data-bscp-topic-chevron="${topicId}"]`);
+      if (!body) return;
+
+      const shouldOpen = body.classList.contains("hidden");
+      body.classList.toggle("hidden", !shouldOpen);
+      button.setAttribute("aria-expanded", String(shouldOpen));
+      if (chevron) chevron.style.transform = shouldOpen ? "rotate(180deg)" : "";
+    });
+  });
+}
+
+function bindSidebarNav(): void {
+  document.querySelectorAll<HTMLButtonElement>("[data-bscp-nav-item]").forEach((button) => {
+    button.addEventListener("click", () => {
+      const topicId = button.dataset.bscpNavItem;
+      if (!topicId) return;
+      const body = document.querySelector<HTMLElement>(`[data-bscp-topic-body="${topicId}"]`);
+      const toggle = document.querySelector<HTMLButtonElement>(`[data-bscp-topic-toggle="${topicId}"]`);
+      const section = document.querySelector<HTMLElement>(`[data-bscp-topic="${topicId}"]`);
+
+      if (body?.classList.contains("hidden")) toggle?.click();
+      section?.scrollIntoView({ behavior: "smooth", block: "start" });
+      document.documentElement.dataset.drawer = "closed";
+    });
+  });
 }
 
 function queueCloudSave(): void {
   if (!isSupabaseConfigured() || !session) return;
   if (syncTimer) clearTimeout(syncTimer);
-  setSyncState("syncing", "Syncing…");
+  setSyncState("syncing", "Syncing...");
   syncTimer = setTimeout(async () => {
-    const result = await saveCloud(session!, progress, startDate, TRACKER_NAME);
+    const result = await saveCloud(session!, progress, "", TRACKER_NAME);
     if (result.ok && result.updatedAt) {
       localUpdatedAt = touchLocalTimestamp(result.updatedAt);
       saveLastSynced(result.updatedAt);
@@ -79,29 +170,29 @@ function queueCloudSave(): void {
 
 async function loadOrMergeCloud(): Promise<void> {
   if (!session) return;
-  setSyncState("syncing", "Syncing…");
+  setSyncState("syncing", "Syncing...");
   const cloud = await loadCloud(session, TRACKER_NAME);
   if (!cloud) {
     setSyncState("error", "Sync failed");
     return;
   }
-  const cloudHasData = Object.keys(cloud.progress).length > 0 || Boolean(cloud.startDate);
+
+  const cloudHasData = Object.keys(cloud.progress).length > 0;
   const cloudNewer = cloud.updatedAt && (!localUpdatedAt || new Date(cloud.updatedAt) > new Date(localUpdatedAt));
-  const localHasData = Object.keys(progress).length > 0 || Boolean(startDate);
+  const localHasData = Object.keys(progress).length > 0;
 
   if (cloudHasData && cloudNewer) {
     progress = cloud.progress;
-    startDate = cloud.startDate;
-    saveProgress(progress);
-    saveStartDate(startDate);
+    saveProgressLocal(progress);
     localUpdatedAt = touchLocalTimestamp(cloud.updatedAt);
     saveLastSynced(cloud.updatedAt);
     setSyncState("ok", "Loaded cloud progress");
     refresh();
     return;
   }
+
   if (localHasData || !cloudHasData) {
-    const result = await saveCloud(session, progress, startDate, TRACKER_NAME);
+    const result = await saveCloud(session, progress, "", TRACKER_NAME);
     if (result.ok && result.updatedAt) {
       localUpdatedAt = touchLocalTimestamp(result.updatedAt);
       saveLastSynced(result.updatedAt);
@@ -114,7 +205,13 @@ async function loadOrMergeCloud(): Promise<void> {
   }
 }
 
-// ---- Auth gate UI ----------------------------------------------------------
+function setAuthStatus(message: string): void {
+  setText(document.getElementById("authGateStatus"), message);
+}
+
+function setUsernameStatus(message: string): void {
+  setText(document.getElementById("authUsernameStatus"), message);
+}
 
 function setAuthMode(mode: AuthMode): void {
   authMode = mode;
@@ -148,16 +245,6 @@ function setAuthMode(mode: AuthMode): void {
   setAuthStatus(mode === "sign-in"
     ? "Sign in with your username and password."
     : "Create an account with a username and a password (8+ characters).");
-}
-
-function setAuthStatus(message: string): void {
-  const node = document.getElementById("authGateStatus");
-  if (node) node.textContent = message;
-}
-
-function setUsernameStatus(message: string): void {
-  const node = document.getElementById("authUsernameStatus");
-  if (node) node.textContent = message;
 }
 
 function showAuth(show: boolean): void {
@@ -195,8 +282,8 @@ function queueUsernameCheck(): void {
     const input = document.getElementById("authUsernameInput") as HTMLInputElement | null;
     const value = input?.value.trim() ?? "";
     if (!value) { setUsernameStatus(""); return; }
-    if (!isValidUsername(value)) { setUsernameStatus("Use 3–24 letters, numbers, or underscores."); return; }
-    setUsernameStatus("Checking…");
+    if (!isValidUsername(value)) { setUsernameStatus("Use 3-24 letters, numbers, or underscores."); return; }
+    setUsernameStatus("Checking...");
     const { ok, available } = await checkUsername(value);
     if (!ok) { setUsernameStatus("Could not check right now."); return; }
     usernameAvailable = available;
@@ -208,12 +295,12 @@ async function submitAuth(): Promise<void> {
   const username = (document.getElementById("authUsernameInput") as HTMLInputElement | null)?.value.trim() ?? "";
   const email = (document.getElementById("authEmailInput") as HTMLInputElement | null)?.value.trim() ?? "";
   const password = (document.getElementById("authPasswordInput") as HTMLInputElement | null)?.value ?? "";
-  if (!isValidUsername(username)) { setAuthStatus("Username must be 3–24 letters, numbers, or underscores."); return; }
+  if (!isValidUsername(username)) { setAuthStatus("Username must be 3-24 letters, numbers, or underscores."); return; }
   if (authMode === "sign-up" && usernameAvailable === false) { setAuthStatus("Choose another username."); return; }
   if (authMode === "sign-up" && !email) { setAuthStatus("Enter your email address."); return; }
   if (password.length < 8) { setAuthStatus("Password must be at least 8 characters."); return; }
 
-  setAuthStatus(authMode === "sign-in" ? "Signing in…" : "Creating account…");
+  setAuthStatus(authMode === "sign-in" ? "Signing in..." : "Creating account...");
   const data = authMode === "sign-in"
     ? await signIn(username, password)
     : await signUp(username, email, password);
@@ -290,13 +377,10 @@ async function initSupabase(): Promise<void> {
   if (session) await loadOrMergeCloud();
 }
 
-// ---- Tracker bindings ------------------------------------------------------
-
 function bindTrackerEvents(): void {
-  // Lesson checkboxes
   document.body.addEventListener("change", (event) => {
     const target = event.target as HTMLInputElement | null;
-    if (!target?.matches?.("[data-video-checkbox]")) return;
+    if (!target?.matches?.("[data-bscp-checkbox]")) return;
     const key = target.dataset.key;
     if (!key) return;
     if (target.checked) progress[key] = true;
@@ -304,87 +388,22 @@ function bindTrackerEvents(): void {
     persistProgress();
   });
 
-  // Start date
-  document.body.addEventListener("change", (event) => {
-    const target = event.target as HTMLInputElement | null;
-    if (target?.id === "startDateInput") {
-      persistStart(target.value);
-      showToast("Start date saved.", { variant: "success" });
-    }
-  });
-
-  // Today: mark all
-  document.querySelector<HTMLElement>("[data-today-mark-all]")?.addEventListener("click", () => {
-    const view = getView();
-    if (view.kind !== "home") return;
-    const lessonInputs = document.querySelectorAll<HTMLInputElement>("[data-today-lessons] [data-video-checkbox]");
-    lessonInputs.forEach((input, idx) => {
-      setTimeout(() => {
-        if (!input.checked) {
-          input.checked = true;
-          const key = input.dataset.key;
-          if (key) progress[key] = true;
-        }
-      }, idx * 30);
-    });
-    setTimeout(() => persistProgress(), lessonInputs.length * 30 + 50);
-  });
-
-  // Module: mark all watched
-  document.body.addEventListener("click", (event) => {
-    const target = event.target as HTMLElement | null;
-    const code = target?.dataset?.moduleMarkAll;
-    if (!code) return;
-    const module = COURSE.find((m) => m.code === code);
-    if (!module) return;
-    module.chapters.forEach((chapter) => {
-      chapter.lessons.forEach((lesson) => {
-        progress[videoKey(module.code, chapter.num, lesson)] = true;
-      });
-    });
-    persistProgress();
-    showToast(`Marked ${module.name} watched.`, { variant: "success" });
-  });
-
-  // Module: reset progress (with undo)
-  document.body.addEventListener("click", (event) => {
-    const target = event.target as HTMLElement | null;
-    const code = target?.dataset?.moduleReset;
-    if (!code) return;
-    const module = COURSE.find((m) => m.code === code);
-    if (!module) return;
-    const before = snapshot({ progress, startDate });
-    module.chapters.forEach((chapter) => {
-      chapter.lessons.forEach((lesson) => {
-        delete progress[videoKey(module.code, chapter.num, lesson)];
-      });
-    });
-    persistProgress();
-    showToast(`Reset ${module.name}.`, {
-      variant: "danger",
-      duration: 6000,
-      undo: {
-        onUndo: () => {
-          progress = before.progress;
-          startDate = before.startDate;
-          persistProgress();
-          showToast("Restored.", { variant: "success" });
-        },
-      },
+  document.querySelectorAll<HTMLButtonElement>("[data-bscp-filter]").forEach((button) => {
+    button.addEventListener("click", () => {
+      applyFilter((button.dataset.bscpFilter ?? "all") as LevelFilter);
     });
   });
 }
 
-// ---- Boot ------------------------------------------------------------------
-
 function boot(): void {
   initTheme();
   initDrawer();
-  initView(allValidSlugs());
+  bindTopicAccordions();
+  bindSidebarNav();
   bindAuthEvents();
   bindTrackerEvents();
   setAuthMode("sign-in");
-
+  applyFilter("all");
   refresh();
   void initSupabase();
 }
@@ -394,7 +413,3 @@ if (document.readyState === "loading") {
 } else {
   boot();
 }
-
-onViewChange(() => {
-  refresh();
-});

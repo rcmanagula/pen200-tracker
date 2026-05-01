@@ -1,9 +1,19 @@
 ---
 import ThemeToggle from "@/components/ThemeToggle.astro";
 import SyncIndicator from "@/components/SyncIndicator.astro";
+
+const base = import.meta.env.BASE_URL;
 ---
 
 <footer class="border-t border-default p-4 flex flex-col gap-3">
+  <a href={base} class="btn btn-ghost justify-start">
+    <svg aria-hidden="true" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M3 9l9-7 9 7" />
+      <path d="M9 22V12h6v10" />
+      <path d="M21 22H3" />
+    </svg>
+    Dashboard
+  </a>
   <ThemeToggle />
   <SyncIndicator />
   <button

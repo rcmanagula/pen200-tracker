@@ -1,19 +1,35 @@
 ---
 import AppShell from "@/components/AppShell.astro";
 import AuthGate from "@/components/AuthGate.astro";
-import Sidebar from "@/components/Sidebar.astro";
-import MainPane from "@/components/MainPane.astro";
+import CourseCard from "@/components/CourseCard.astro";
 import Toast from "@/components/Toast.astro";
+import { COURSES } from "@/data/courses";
+
+const base = import.meta.env.BASE_URL;
 ---
 
-<AppShell>
-  <AuthGate />
-  <div id="trackerApp" class="app-grid">
-    <Sidebar />
-    <MainPane />
-  </div>
+<AppShell title="Course Tracker Dashboard">
+  <AuthGate shortName="Course Tracker" subtitle="Sign in to continue" />
+  <main id="dashboardApp" class="hidden min-h-screen px-4 py-6 md:px-8 md:py-10">
+    <div class="mx-auto grid max-w-5xl gap-8">
+      <header class="flex flex-wrap items-center justify-between gap-4 border-b border-default pb-5">
+        <div>
+          <p id="dashGreeting" class="hidden text-small font-semibold text-fg-muted"></p>
+          <h1 class="font-display text-h1 text-fg-default">Course Tracker</h1>
+          <p class="mt-2 max-w-2xl text-small text-fg-muted">
+            Choose a course to continue tracking your progress.
+          </p>
+        </div>
+        <button id="dashSignOut" type="button" class="btn btn-ghost btn-danger hidden">Sign out</button>
+      </header>
+
+      <section class="grid gap-4 md:grid-cols-2" aria-label="Courses">
+        {COURSES.map((course) => <CourseCard course={course} base={base} />)}
+      </section>
+    </div>
+  </main>
   <Toast />
   <script>
-    import "@/lib/tracker";
+    import "@/lib/dashboard";
   </script>
 </AppShell>

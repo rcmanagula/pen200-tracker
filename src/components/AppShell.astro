@@ -1,7 +1,11 @@
 ---
 import "@/styles/global.css";
 
-const title = "PEN-200 OSCP Progress Tracker";
+interface Props {
+  title?: string;
+}
+
+const { title = "PEN-200 OSCP Progress Tracker" } = Astro.props;
 const base = import.meta.env.BASE_URL.endsWith("/")
   ? import.meta.env.BASE_URL
   : `${import.meta.env.BASE_URL}/`;

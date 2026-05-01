@@ -1,5 +1,12 @@
 ---
 import ThemeToggle from "@/components/ThemeToggle.astro";
+
+interface Props {
+  shortName?: string;
+  subtitle?: string;
+}
+
+const { shortName = "PEN-200", subtitle = "Progress Tracker" } = Astro.props;
 ---
 
 <section
@@ -15,8 +22,8 @@ import ThemeToggle from "@/components/ThemeToggle.astro";
           <path d="m9 12 2 2 4-4" />
         </svg>
       </span>
-      <h1 id="auth-title" class="font-display text-h1 text-fg-default">PEN-200</h1>
-      <p class="text-small text-fg-muted -mt-2">Progress Tracker</p>
+      <h1 id="auth-title" class="font-display text-h1 text-fg-default">{shortName}</h1>
+      <p class="text-small text-fg-muted -mt-2">{subtitle}</p>
     </div>
 
     <div class="rounded-lg border border-default bg-surface p-6 shadow-card">

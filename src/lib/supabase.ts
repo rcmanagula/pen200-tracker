@@ -1,13 +1,4 @@
 import { createClient, type Session, type SupabaseClient } from "@supabase/supabase-js";
-import type { ProgressState } from "@/lib/progress";
-
-export const TRACKER_NAME = "pen200";
-
-export type TrackerProgressRecord = {
-  progress: ProgressState | null;
-  start_date: string | null;
-  updated_at: string | null;
-};
 
 let client: SupabaseClient | null = null;
 
@@ -25,7 +16,10 @@ export function isSupabaseConfigured(): boolean {
 
 export function getSupabaseClient(): SupabaseClient | null {
   if (!isSupabaseConfigured()) return null;
-  client ??= createClient(import.meta.env.PUBLIC_SUPABASE_URL, import.meta.env.PUBLIC_SUPABASE_ANON_KEY);
+  const url = import.meta.env.PUBLIC_SUPABASE_URL;
+  const anonKey = import.meta.env.PUBLIC_SUPABASE_ANON_KEY;
+  if (!url || !anonKey) return null;
+  client ??= createClient(url, anonKey);
   return client;
 }
 

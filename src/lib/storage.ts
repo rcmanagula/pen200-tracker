@@ -5,6 +5,15 @@ export const STARTDATE_KEY = "pen200_startdate";
 export const UPDATED_AT_KEY = "pen200_updated_at";
 export const LAST_SYNCED_KEY = "pen200_last_synced";
 
+export function makeStorageKeys(name: string) {
+  return {
+    progressKey: `${name}_progress_v2`,
+    startDateKey: `${name}_startdate`,
+    updatedAtKey: `${name}_updated_at`,
+    lastSyncedKey: `${name}_last_synced`,
+  } as const;
+}
+
 export function loadProgress(): ProgressState {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);

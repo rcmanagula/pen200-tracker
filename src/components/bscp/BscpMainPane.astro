@@ -1,0 +1,77 @@
+---
+import {
+  BSCP_APPRENTICE_COUNT,
+  BSCP_EXPERT_COUNT,
+  BSCP_PRACTITIONER_COUNT,
+  BSCP_TOTAL_LABS,
+  type BscpTopic,
+} from "@/data/bscp";
+import MobileDrawerTrigger from "@/components/MobileDrawerTrigger.astro";
+import PageHeader from "@/components/PageHeader.astro";
+import BscpTopicView from "@/components/bscp/BscpTopicView.astro";
+
+interface Props {
+  topics: BscpTopic[];
+}
+
+const { topics } = Astro.props;
+const filters = [
+  { label: "All", value: "all", count: BSCP_TOTAL_LABS },
+  { label: "Apprentice", value: "apprentice", count: BSCP_APPRENTICE_COUNT },
+  { label: "Practitioner", value: "practitioner", count: BSCP_PRACTITIONER_COUNT },
+  { label: "Expert", value: "expert", count: BSCP_EXPERT_COUNT },
+];
+---
+
+<main
+  id="mainPane"
+  tabindex="-1"
+  class="min-h-screen overflow-y-auto px-4 py-6 md:px-6 md:py-8 lg:px-8 lg:py-10"
+>
+  <div class="md:hidden mb-4">
+    <MobileDrawerTrigger />
+  </div>
+
+  <div class="mx-auto max-w-content">
+    <a href="../" class="mb-4 inline-flex items-center gap-1 text-tiny text-fg-muted transition-colors hover:text-fg-default">
+      <svg aria-hidden="true" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M15 18l-6-6 6-6" />
+      </svg>
+      Dashboard
+    </a>
+
+    <PageHeader
+      eyebrow="PortSwigger Web Security Academy"
+      eyebrowRight={`0 / ${BSCP_TOTAL_LABS}`}
+      title="BSCP Labs"
+      subtitle={`${topics.length} topics covering web application security labs.`}
+    >
+      <Fragment slot="below-title">
+        <div class="mt-5 grid gap-4">
+          <div class="h-2.5 overflow-hidden rounded-full bg-surface-2">
+            <div
+              id="bscpOverallBar"
+              class="h-full rounded-full bg-accent transition-[width] duration-300"
+              style="width: 0%"
+            ></div>
+          </div>
+          <div class="flex flex-wrap gap-2" aria-label="Difficulty filters">
+            {filters.map((filter) => (
+              <button
+                type="button"
+                class={`rounded-md border px-3 py-1.5 text-small font-semibold transition-colors ${filter.value === "all" ? "border-accent bg-accent text-on-accent" : "border-default text-fg-muted hover:bg-surface-2 hover:text-fg-default"}`}
+                data-bscp-filter={filter.value}
+              >
+                {filter.label} <span class="font-mono text-tiny">{filter.count}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+      </Fragment>
+    </PageHeader>
+
+    <div class="mt-6 rounded-lg border border-default bg-surface p-4">
+      {topics.map((topic) => <BscpTopicView topic={topic} />)}
+    </div>
+  </div>
+</main>

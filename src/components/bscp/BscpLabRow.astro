@@ -1,0 +1,46 @@
+---
+import type { BscpLab } from "@/data/bscp";
+
+interface Props {
+  lab: BscpLab;
+  index: number;
+}
+
+const { lab, index } = Astro.props;
+const label = String(index + 1).padStart(2, "0");
+const levelLabel = lab.level[0].toUpperCase() + lab.level.slice(1);
+---
+
+<label
+  class="group flex items-start gap-3 rounded-md px-3 py-2 -mx-3 transition-colors duration-[80ms] hover:bg-surface-2"
+  data-bscp-lab
+  data-bscp-level={lab.level}
+>
+  <input
+    type="checkbox"
+    class="mt-1 h-4 w-4 shrink-0 cursor-pointer accent-accent"
+    data-bscp-checkbox
+    data-key={lab.id}
+  />
+  <span class="mt-0.5 min-w-[2rem] font-mono text-tiny text-fg-subtle">{label}</span>
+  <span class="grid flex-1 gap-1">
+    <span class="text-small text-fg-default group-has-[input:checked]:text-fg-muted">{lab.name}</span>
+    <span class="font-mono text-tiny text-fg-subtle">{lab.id}</span>
+  </span>
+  <span class="mt-0.5 rounded-md border border-default px-2 py-0.5 text-tiny font-semibold text-fg-muted">
+    {levelLabel}
+  </span>
+  <a
+    href={lab.url}
+    target="_blank"
+    rel="noreferrer"
+    class="mt-0.5 rounded-md p-1.5 text-fg-muted transition-colors hover:bg-surface hover:text-fg-default"
+    aria-label={`Open ${lab.name}`}
+  >
+    <svg aria-hidden="true" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M15 3h6v6" />
+      <path d="M10 14 21 3" />
+      <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+    </svg>
+  </a>
+</label>
