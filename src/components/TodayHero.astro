@@ -1,0 +1,40 @@
+---
+---
+
+<section
+  aria-labelledby="today-h"
+  id="todayHero"
+  class="rounded-lg border border-default bg-surface p-6 shadow-soft"
+>
+  <header class="flex items-center justify-between gap-3 mb-4">
+    <h2 id="today-h" class="text-tiny font-semibold uppercase tracking-wider text-fg-muted">Today</h2>
+    <span data-today-status class="text-tiny font-semibold text-fg-subtle"></span>
+  </header>
+
+  <div data-today-empty hidden class="grid gap-3">
+    <p class="text-body text-fg-muted">Set your start date to begin the 18-day study plan.</p>
+    <label class="inline-flex items-center gap-3">
+      <span class="text-small font-semibold text-fg-default">Start date</span>
+      <input
+        id="startDateInput"
+        type="date"
+        class="rounded-md border border-default bg-surface px-3 py-2 text-small text-fg-default focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+      />
+    </label>
+  </div>
+
+  <div data-today-content hidden>
+    <div class="text-tiny font-semibold text-fg-muted mb-1" data-today-eyebrow></div>
+    <div class="text-h2 font-semibold text-fg-default mb-4" data-today-title></div>
+    <ul class="m-0 list-none p-0" data-today-lessons></ul>
+    <footer class="mt-5 flex items-center justify-between text-tiny text-fg-muted">
+      <span data-today-meta></span>
+      <button type="button" class="btn btn-ghost" data-today-mark-all>Mark today watched</button>
+    </footer>
+  </div>
+
+  <div data-today-complete hidden class="rounded-md border border-default bg-surface-2 p-5 text-center">
+    <div class="text-h3 font-semibold text-fg-default mb-1">Course complete.</div>
+    <p class="text-small text-fg-muted">Move into deeper practice and review.</p>
+  </div>
+</section>

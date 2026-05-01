@@ -1,0 +1,20 @@
+{
+  "name": "pen200-tracker",
+  "type": "module",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "latest",
+    "astro": "^6.1.0",
+    "autoprefixer": "latest",
+    "postcss": "latest",
+    "tailwindcss": "^3.4.17",
+    "typescript": "latest"
+  },
+  "devDependencies": {}
+}

@@ -1,0 +1,35 @@
+---
+type Size = "xs" | "sm" | "md";
+
+type Props = {
+  size?: Size;
+  percent?: number;
+  label?: string;
+  id?: string;
+};
+
+const { size = "sm", percent = 0, label, id } = Astro.props;
+
+const heights: Record<Size, string> = {
+  xs: "h-[3px]",
+  sm: "h-[6px]",
+  md: "h-[10px]",
+};
+---
+
+<div class="w-full">
+  {label && <div class="mb-1.5 text-tiny font-semibold text-fg-muted">{label}</div>}
+  <div
+    role="progressbar"
+    aria-valuenow={percent}
+    aria-valuemin="0"
+    aria-valuemax="100"
+    class={`overflow-hidden w-full rounded-full bg-surface-2 ${heights[size]}`}
+  >
+    <div
+      id={id}
+      class="h-full rounded-full bg-accent transition-[width] duration-[240ms]"
+      style={`width: ${percent}%`}
+    ></div>
+  </div>
+</div>

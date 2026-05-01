@@ -1,0 +1,35 @@
+---
+import { COURSE } from "@/data/course";
+import SidebarNavItem from "@/components/SidebarNavItem.astro";
+
+const modules = COURSE.map((m) => ({
+  target: `module-${m.code.toLowerCase()}`,
+  href: `#/m/${m.code.toLowerCase()}`,
+  label: m.name,
+  sublabel: m.code,
+  code: m.code,
+}));
+---
+
+<nav aria-label="Tracker views" class="flex-1 overflow-y-auto py-3">
+  <SidebarNavItem target="home" href="#/home" label="Home" />
+
+  <div class="px-4 pt-5 pb-1.5 text-tiny font-semibold uppercase tracking-wider text-fg-subtle">
+    Modules
+  </div>
+
+  <ul class="m-0 list-none p-0">
+    {modules.map((m) => (
+      <li>
+        <SidebarNavItem
+          target={m.target}
+          href={m.href}
+          label={m.label}
+          sublabel={m.sublabel}
+          showProgress
+          progressKey={m.code}
+        />
+      </li>
+    ))}
+  </ul>
+</nav>

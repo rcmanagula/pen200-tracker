@@ -1,0 +1,11 @@
+node_modules/
+dist/
+.astro/
+.env
+.env.local
+npm-debug.log*
+preview*.log
+.playwright-mcp/
+.claude/
+.mcp.json
+.vscode/

@@ -1,0 +1,22 @@
+---
+import { COURSE } from "@/data/course";
+import HomeView from "@/components/HomeView.astro";
+import ModuleView from "@/components/ModuleView.astro";
+import MobileDrawerTrigger from "@/components/MobileDrawerTrigger.astro";
+---
+
+<main
+  id="mainPane"
+  tabindex="-1"
+  class="min-h-screen overflow-y-auto px-4 py-6 md:px-6 md:py-8 lg:px-8 lg:py-10"
+  data-view="home"
+>
+  <div class="md:hidden mb-4">
+    <MobileDrawerTrigger />
+  </div>
+
+  <div class="mx-auto max-w-content">
+    <HomeView />
+    {COURSE.map((module) => <ModuleView module={module} />)}
+  </div>
+</main>

@@ -1,0 +1,40 @@
+---
+type Props = {
+  target: string;
+  href: string;
+  label: string;
+  sublabel?: string;
+  showProgress?: boolean;
+  progressKey?: string;
+};
+
+const { target, href, label, sublabel, showProgress = false, progressKey } = Astro.props;
+---
+
+<a
+  href={href}
+  data-nav-item={target}
+  data-progress-key={progressKey}
+  class="group relative grid grid-cols-[1fr_auto] items-center gap-x-3 gap-y-1 px-4 py-2.5 text-small text-fg-muted hover:bg-surface-2 hover:text-fg-default transition-colors duration-[80ms]"
+>
+  <span aria-hidden="true" class="absolute left-0 top-1/2 h-7 w-[3px] -translate-y-1/2 origin-left scale-x-0 bg-accent transition-transform duration-[120ms] group-data-[active]:scale-x-100"></span>
+  <span class="min-w-0 truncate font-semibold">
+    {label}
+    {sublabel && <span class="ml-2 font-mono text-tiny text-fg-subtle">{sublabel}</span>}
+  </span>
+  {showProgress && (
+    <span class="font-mono text-tiny text-fg-subtle group-data-[active]:text-fg-muted" data-nav-pct>0%</span>
+  )}
+  {showProgress && (
+    <span class="col-span-2 -mt-1 h-[3px] w-full overflow-hidden rounded-full bg-surface-2">
+      <span class="block h-full bg-accent transition-[width] duration-[240ms]" style="width:0%" data-nav-bar></span>
+    </span>
+  )}
+</a>
+
+<style>
+  a[data-active] {
+    background: var(--accent-soft);
+    color: var(--fg-default);
+  }
+</style>

@@ -1,0 +1,118 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap");
+@import "./tokens.css";
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  *, *::before, *::after { box-sizing: border-box; }
+
+  html {
+    background: var(--bg-canvas);
+    color: var(--fg-default);
+    font-family: var(--font-sans);
+    font-size: var(--text-body);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: geometricPrecision;
+  }
+
+  body {
+    min-height: 100vh;
+    margin: 0;
+    background: var(--bg-canvas);
+    color: var(--fg-default);
+  }
+
+  button, input, textarea, select {
+    font: inherit;
+    color: inherit;
+  }
+
+  h1, h2, h3, h4, h5, h6 { margin: 0; }
+
+  /* Skip link */
+  .skip-link {
+    position: absolute;
+    left: -9999px;
+    top: 0;
+    padding: 0.75rem 1rem;
+    background: var(--bg-surface);
+    color: var(--fg-default);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-md);
+    z-index: 100;
+  }
+  .skip-link:focus { left: 1rem; top: 1rem; }
+
+  /* Focus visibility — only on keyboard */
+  :focus { outline: none; }
+  :focus-visible {
+    outline: 2px solid var(--border-focus);
+    outline-offset: 2px;
+    border-radius: var(--radius-sm);
+  }
+
+  /* Body scroll-lock when mobile drawer is open */
+  html[data-drawer="open"] body { overflow: hidden; }
+}
+
+@layer components {
+  /* Buttons — semantic, token-driven */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    min-height: 2.5rem;
+    padding: 0.5rem 0.875rem;
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-md);
+    background: var(--bg-surface);
+    color: var(--fg-default);
+    font-weight: 600;
+    font-size: var(--text-small);
+    transition: background-color 100ms ease-out, border-color 100ms ease-out, color 100ms ease-out;
+    cursor: pointer;
+  }
+  .btn:hover { background: var(--bg-surface-2); border-color: var(--border-strong); }
+
+  .btn-primary {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: var(--fg-on-accent);
+  }
+  .btn-primary:hover { background: var(--accent-hover); border-color: var(--accent-hover); }
+  .btn-primary:active { transform: translateY(1px); transition-duration: 60ms; }
+
+  .btn-ghost {
+    background: transparent;
+    border-color: transparent;
+    color: var(--fg-muted);
+  }
+  .btn-ghost:hover { background: var(--bg-surface-2); color: var(--fg-default); }
+
+  .btn-danger { color: var(--danger); }
+  .btn-danger:hover { background: color-mix(in oklab, var(--danger) 10%, transparent); }
+}
+
+@layer utilities {
+  .font-display { font-family: var(--font-serif); font-weight: 400; letter-spacing: -0.01em; }
+  .text-mono-feat { font-feature-settings: "tnum" 1, "ss01" 1; }
+}
+
+/* Reduced motion — clamp everything that animates */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* View Transitions — used when supported */
+::view-transition-old(page-title),
+::view-transition-new(page-title) {
+  animation-duration: 180ms;
+}

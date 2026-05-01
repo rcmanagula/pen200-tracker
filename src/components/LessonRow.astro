@@ -1,0 +1,37 @@
+---
+import type { CourseModule } from "@/data/course";
+import type { LessonItem } from "@/lib/progress";
+import { videoKey } from "@/lib/progress";
+
+type Props = {
+  module: CourseModule;
+  chapterNum: number;
+  item: LessonItem;
+};
+const { module, chapterNum, item } = Astro.props;
+const key = videoKey(module.code, chapterNum, item.num);
+const lessonNum = `${String(chapterNum).padStart(2, "0")}.${String(item.num).padStart(2, "0")}`;
+---
+
+<label
+  class={`group flex items-center gap-3 py-2 px-3 -mx-3 rounded-md transition-colors duration-[80ms] hover:bg-surface-2 ${item.available ? "cursor-pointer" : "opacity-60 cursor-not-allowed pointer-events-none"}`}
+  data-lesson-row
+  data-key={key}
+  data-module={module.code}
+  data-chapter={chapterNum}
+>
+  <input
+    type="checkbox"
+    class="lesson-check h-4 w-4 shrink-0 cursor-pointer accent-accent"
+    data-video-checkbox
+    data-key={key}
+    data-module={module.code}
+    data-chapter={chapterNum}
+    disabled={!item.available}
+  />
+  <span class="font-mono text-tiny text-fg-subtle min-w-[3.5rem]">{lessonNum}</span>
+  <span class="flex-1 text-small text-fg-default group-has-[.lesson-check:checked]:text-fg-muted">
+    Lesson {item.num}{item.available ? "" : " (n/a)"}
+  </span>
+  <span class="font-mono text-tiny text-fg-subtle">{key}</span>
+</label>

@@ -1,0 +1,95 @@
+---
+import ThemeToggle from "@/components/ThemeToggle.astro";
+---
+
+<section
+  id="authGate"
+  class="fixed inset-0 z-50 grid min-h-screen place-items-center bg-canvas px-4 py-8"
+  aria-labelledby="auth-title"
+>
+  <div class="grid w-full max-w-md gap-6">
+    <div class="grid place-items-center gap-3">
+      <span aria-hidden="true" class="inline-flex h-10 w-10 items-center justify-center rounded-md bg-accent text-on-accent">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 3 L4 7 v6 c0 4 3.5 7 8 8 4.5-1 8-4 8-8 V7 Z" />
+          <path d="m9 12 2 2 4-4" />
+        </svg>
+      </span>
+      <h1 id="auth-title" class="font-display text-h1 text-fg-default">PEN-200</h1>
+      <p class="text-small text-fg-muted -mt-2">Progress Tracker</p>
+    </div>
+
+    <div class="rounded-lg border border-default bg-surface p-6 shadow-card">
+      <div role="tablist" class="grid grid-cols-2 gap-0 mb-5 border-b border-default">
+        <button
+          type="button"
+          role="tab"
+          id="authSignInModeBtn"
+          aria-selected="true"
+          class="auth-tab pb-2 text-small font-semibold text-fg-default border-b-2 border-accent -mb-px"
+        >Sign in</button>
+        <button
+          type="button"
+          role="tab"
+          id="authSignUpModeBtn"
+          aria-selected="false"
+          class="auth-tab pb-2 text-small font-semibold text-fg-muted border-b-2 border-transparent -mb-px"
+        >Create account</button>
+      </div>
+
+      <form id="authForm" class="grid gap-4">
+        <label class="grid gap-1.5" for="authUsernameInput">
+          <span class="text-tiny font-semibold text-fg-muted">Username</span>
+          <input
+            id="authUsernameInput"
+            class="rounded-md border border-default bg-surface px-3 py-2 text-small text-fg-default focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+            type="text"
+            autocomplete="username"
+            placeholder="your_username"
+            minlength="3"
+            maxlength="24"
+            pattern="[A-Za-z0-9_]{3,24}"
+            required
+          />
+          <span id="authUsernameStatus" class="text-tiny text-fg-subtle min-h-[1em]"></span>
+        </label>
+
+        <label id="authEmailLabel" class="hidden gap-1.5" for="authEmailInput">
+          <span class="text-tiny font-semibold text-fg-muted">Email address</span>
+          <input
+            id="authEmailInput"
+            class="rounded-md border border-default bg-surface px-3 py-2 text-small text-fg-default focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+            type="email"
+            autocomplete="email"
+            placeholder="you@example.com"
+          />
+        </label>
+
+        <label class="grid gap-1.5" for="authPasswordInput">
+          <span class="text-tiny font-semibold text-fg-muted">Password</span>
+          <input
+            id="authPasswordInput"
+            class="rounded-md border border-default bg-surface px-3 py-2 text-small text-fg-default focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+            type="password"
+            autocomplete="current-password"
+            minlength="8"
+            required
+          />
+        </label>
+
+        <button id="authSubmitBtn" class="btn btn-primary w-full" type="submit">Sign in</button>
+
+        <p
+          id="authGateStatus"
+          class="text-small text-fg-muted text-center min-h-[1.25em]"
+          aria-live="polite"
+          aria-atomic="true"
+        >Sign in with your username and password.</p>
+      </form>
+    </div>
+
+    <div class="absolute bottom-4 right-4 hidden md:block">
+      <ThemeToggle />
+    </div>
+  </div>
+</section>

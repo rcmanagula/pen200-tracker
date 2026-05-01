@@ -1,0 +1,23 @@
+---
+type Props = {
+  eyebrow?: string;
+  eyebrowRight?: string;
+  title: string;
+  subtitle?: string;
+};
+const { eyebrow, eyebrowRight, title, subtitle } = Astro.props;
+---
+
+<header class="pb-6 mb-6 border-b border-default">
+  {(eyebrow || eyebrowRight) && (
+    <div class="flex items-center justify-between text-tiny font-semibold uppercase tracking-wider text-fg-muted mb-3">
+      <span>{eyebrow}</span>
+      {eyebrowRight && <span class="font-mono normal-case tracking-normal">{eyebrowRight}</span>}
+    </div>
+  )}
+  <h1 class="font-display text-display text-fg-default" style="view-transition-name: page-title">
+    <slot name="title">{title}</slot>
+  </h1>
+  {subtitle && <p class="mt-2 text-body text-fg-muted">{subtitle}</p>}
+  <slot name="below-title" />
+</header>

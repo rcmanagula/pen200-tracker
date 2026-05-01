@@ -1,0 +1,55 @@
+---
+import type { CourseModule } from "@/data/course";
+import { CODE_TO_DAY } from "@/data/studyPlan";
+import PageHeader from "@/components/PageHeader.astro";
+import ProgressBar from "@/components/ProgressBar.astro";
+import ChapterSection from "@/components/ChapterSection.astro";
+
+type Props = {
+  module: CourseModule;
+};
+const { module } = Astro.props;
+const slug = module.code.toLowerCase();
+const totalChapters = module.chapters.length;
+const totalLessons = module.chapters.reduce((sum, c) => sum + c.lessons.length, 0);
+const day = CODE_TO_DAY[module.code];
+const subtitle = `${totalChapters} chapter${totalChapters === 1 ? "" : "s"} · ${totalLessons} lesson${totalLessons === 1 ? "" : "s"}${day ? ` · Day ${day}` : ""}`;
+---
+
+<article
+  data-view-block={`module-${slug}`}
+  data-module-card
+  data-module={module.code}
+  hidden
+>
+  <a href="#/home" class="inline-flex items-center gap-1 text-tiny text-fg-muted hover:text-fg-default transition-colors mb-4" data-nav-item="home">
+    <svg aria-hidden="true" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M15 18l-6-6 6-6" />
+    </svg>
+    Home
+  </a>
+
+  <PageHeader
+    eyebrow={`Season ${module.season}`}
+    eyebrowRight={`0%`}
+    title={module.name}
+    subtitle={subtitle}
+  >
+    <Fragment slot="below-title">
+      <div class="mt-5">
+        <ProgressBar size="md" percent={0} id={`bar-${slug}`} />
+      </div>
+    </Fragment>
+  </PageHeader>
+
+  <div data-chapters>
+    {module.chapters.map((chapter) => (
+      <ChapterSection module={module} chapter={chapter} />
+    ))}
+  </div>
+
+  <footer class="mt-8 pt-6 border-t border-default flex flex-wrap items-center gap-3">
+    <button type="button" class="btn btn-ghost" data-module-mark-all={module.code}>Mark all watched</button>
+    <button type="button" class="btn btn-ghost btn-danger" data-module-reset={module.code}>Reset module progress</button>
+  </footer>
+</article>

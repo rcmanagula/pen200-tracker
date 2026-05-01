@@ -1,0 +1,19 @@
+---
+import AppShell from "@/components/AppShell.astro";
+import AuthGate from "@/components/AuthGate.astro";
+import Sidebar from "@/components/Sidebar.astro";
+import MainPane from "@/components/MainPane.astro";
+import Toast from "@/components/Toast.astro";
+---
+
+<AppShell>
+  <AuthGate />
+  <div id="trackerApp" class="app-grid">
+    <Sidebar />
+    <MainPane />
+  </div>
+  <Toast />
+  <script>
+    import "@/lib/tracker";
+  </script>
+</AppShell>

@@ -1,0 +1,19 @@
+---
+import ThemeToggle from "@/components/ThemeToggle.astro";
+import SyncIndicator from "@/components/SyncIndicator.astro";
+---
+
+<footer class="border-t border-default p-4 flex flex-col gap-3">
+  <ThemeToggle />
+  <SyncIndicator />
+  <button
+    id="signOutBtn"
+    type="button"
+    class="btn btn-ghost btn-danger justify-start hidden"
+  >
+    <svg aria-hidden="true" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9" />
+    </svg>
+    Sign out
+  </button>
+</footer>

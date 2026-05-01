@@ -1,0 +1,32 @@
+---
+---
+
+<div
+  id="syncStatus"
+  data-sync-state="off"
+  class="flex items-center gap-2 px-1 text-tiny text-fg-muted"
+  role="status"
+  aria-live="polite"
+>
+  <span aria-hidden="true" class="inline-flex h-2 w-2 items-center justify-center">
+    <span class="block h-2 w-2 rounded-full bg-fg-subtle" data-sync-dot></span>
+  </span>
+  <span data-sync-label>Local mode</span>
+</div>
+
+<style>
+  [data-sync-state="ok"] [data-sync-dot]      { background: var(--accent); }
+  [data-sync-state="syncing"] [data-sync-dot] {
+    background: var(--accent);
+    animation: sync-pulse 1s linear infinite;
+  }
+  [data-sync-state="warn"] [data-sync-dot]  { background: var(--warning); }
+  [data-sync-state="error"] [data-sync-dot] { background: var(--danger); }
+  [data-sync-state="off"] [data-sync-dot]   { background: var(--fg-subtle); }
+
+  @keyframes sync-pulse {
+    from { opacity: 0.4; }
+    50%  { opacity: 1; }
+    to   { opacity: 0.4; }
+  }
+</style>

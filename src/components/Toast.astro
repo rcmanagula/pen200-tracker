@@ -1,0 +1,32 @@
+---
+---
+
+<div
+  id="toast"
+  role="status"
+  aria-live="polite"
+  class="pointer-events-none fixed bottom-6 left-1/2 -translate-x-1/2 z-[60] max-w-md opacity-0 transition-opacity duration-[180ms]"
+  data-variant="info"
+>
+  <div class="rounded-md border border-default bg-surface px-4 py-3 shadow-pop flex items-center gap-3 pointer-events-auto">
+    <span data-toast-message class="text-small text-fg-default flex-1"></span>
+    <button
+      type="button"
+      data-toast-undo
+      class="hidden btn btn-ghost btn-danger px-3 py-1 text-tiny"
+    >Undo</button>
+  </div>
+</div>
+
+<style>
+  #toast.show { opacity: 1; }
+  #toast > div {
+    transform: translateY(8px);
+    transition: transform 180ms ease-out;
+  }
+  #toast.show > div { transform: translateY(0); }
+
+  #toast[data-variant="success"] > div { border-left: 2px solid var(--success); }
+  #toast[data-variant="warning"] > div { border-left: 2px solid var(--warning); }
+  #toast[data-variant="danger"]  > div { border-left: 2px solid var(--danger); }
+</style>

@@ -1,0 +1,28 @@
+---
+import PageHeader from "@/components/PageHeader.astro";
+import TodayHero from "@/components/TodayHero.astro";
+import OverviewStats from "@/components/OverviewStats.astro";
+import ScheduleStrip from "@/components/ScheduleStrip.astro";
+
+const today = new Date().toLocaleDateString(undefined, { month: "short", day: "numeric" });
+---
+
+<div data-view-block="home" class="grid gap-8" hidden>
+  <PageHeader
+    eyebrow={`Today · ${today}`}
+    title="Welcome back."
+    subtitle="Set your start date to begin tracking the 18-day plan."
+  />
+  <TodayHero />
+  <OverviewStats />
+  <ScheduleStrip />
+
+  <section
+    id="completeBanner"
+    class="hidden rounded-lg border border-default bg-surface-2 p-5 text-center"
+    role="status"
+  >
+    <div class="text-h3 font-semibold text-fg-default">Course complete.</div>
+    <p class="text-small text-fg-muted mt-1">You're ready to move into deeper practice and review.</p>
+  </section>
+</div>
