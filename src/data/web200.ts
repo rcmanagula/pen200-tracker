@@ -1,0 +1,158 @@
+import type { CourseModule } from "@/data/course";
+
+export const WEB200_COURSE: CourseModule[] = [
+  {
+    season: "01",
+    code: "Tools",
+    name: "Tools",
+    chapters: [
+      { num: 1, name: "Getting Started", lessons: [] },
+      { num: 2, name: "Burp Suite", lessons: [0, 1, 2, 3, 4, 5], durations: [80, 66, 105, 219, 324, 191] },
+      { num: 3, name: "Nmap", lessons: [0, 1], durations: [139, 184] },
+      { num: 4, name: "Wordlists", lessons: [2, 3], durations: [50, 194] },
+      { num: 5, name: "Gobuster", lessons: [1, 2, 3], durations: [41, 78, 50] },
+      { num: 6, name: "Wfuzz", lessons: [0, 1, 2, 3, 4, 5], durations: [96, 94, 64, 127, 67, 177] },
+      { num: 7, name: "Hakrawler", lessons: [2], durations: [56] },
+      { num: 8, name: "Shells", lessons: [0], durations: [93] },
+    ],
+  },
+  {
+    season: "02",
+    code: "XSS01",
+    name: "Cross-Site Scripting Introduction and Discovery",
+    chapters: [
+      { num: 1, name: "Introduction to the Sandbox", lessons: [2], durations: [227] },
+      { num: 2, name: "JavaScript Basics for Offensive Uses", lessons: [1, 2], durations: [218, 554] },
+      { num: 3, name: "Cross-Site Scripting - Discovery", lessons: [1, 2, 3, 4], durations: [357, 314, 340, 323] },
+    ],
+  },
+  {
+    season: "03",
+    code: "XSS02",
+    name: "Cross-Site Scripting Exploitation and Case Study",
+    chapters: [
+      { num: 1, name: "Cross-Site Scripting - Exploitation", lessons: [2, 3, 4, 5, 6, 7], durations: [210, 193, 160, 144, 325, 313] },
+      { num: 2, name: "Case Study: Shopizer Reflected XSS", lessons: [0, 1, 2, 3, 4], durations: [85, 69, 324, 466, 438] },
+    ],
+  },
+  {
+    season: "04",
+    code: "COA",
+    name: "Cross-Origin Attacks",
+    chapters: [
+      { num: 1, name: "Same-Origin Policy", lessons: [0], durations: [219] },
+      { num: 2, name: "SameSite Cookies", lessons: [] },
+      { num: 3, name: "Cross-Site Request Forgery (CSRF)", lessons: [] },
+      { num: 4, name: "Case Study: Apache OFBiz", lessons: [0, 1, 2, 3], durations: [15, 224, 401, 346] },
+      { num: 5, name: "Cross-Origin Resource Sharing (CORS)", lessons: [] },
+      { num: 6, name: "Exploiting Weak CORS Policies", lessons: [0, 1, 2, 3], durations: [26, 119, 332, 200] },
+    ],
+  },
+  {
+    season: "05",
+    code: "SQLi01",
+    name: "Introduction to SQL",
+    chapters: [
+      { num: 1, name: "SQL Overview", lessons: [1], durations: [179] },
+      { num: 2, name: "Enumerating MySQL Databases", lessons: [1], durations: [174] },
+      { num: 3, name: "Enumerating Microsoft SQL Server Databases", lessons: [1], durations: [126] },
+      { num: 4, name: "Enumerating PostgreSQL Databases", lessons: [1], durations: [162] },
+      { num: 5, name: "Enumerating Oracle Databases", lessons: [1], durations: [245] },
+    ],
+  },
+  {
+    season: "06",
+    code: "SQLi02",
+    name: "SQL Injection",
+    chapters: [
+      { num: 1, name: "Introduction to SQL Injection", lessons: [] },
+      { num: 2, name: "Testing for SQL Injection", lessons: [3, 4, 5], durations: [142, 134, 355] },
+      { num: 3, name: "Exploiting SQL Injection", lessons: [1, 2, 3, 4, 5], durations: [418, 224, 203, 326, 116] },
+      { num: 4, name: "Database dumping with Automated Tools", lessons: [1], durations: [377] },
+      { num: 5, name: "Case Study: Error-based SQLi in Piwigo", lessons: [2, 3], durations: [504, 536] },
+    ],
+  },
+  {
+    season: "07",
+    code: "DT",
+    name: "Directory Traversal Attacks",
+    chapters: [
+      { num: 1, name: "Directory Traversal Overview", lessons: [0], durations: [134] },
+      { num: 2, name: "Understanding Suggestive Parameters", lessons: [] },
+      { num: 3, name: "Relative vs. Absolute Pathing", lessons: [1, 2], durations: [65, 102] },
+      { num: 4, name: "Directory Listing", lessons: [0, 1, 2], durations: [68, 38, 192] },
+      { num: 5, name: "Directory Traversal Sandbox", lessons: [1, 3], missing: [2], durations: [131, 102] },
+      { num: 6, name: "Case Study: Home Assistant", lessons: [0, 1, 2], durations: [56, 213, 219] },
+      { num: 7, name: "Wrapping Up", lessons: [] },
+    ],
+  },
+  {
+    season: "08",
+    code: "XXE",
+    name: "XML External Entities",
+    chapters: [
+      { num: 1, name: "Introduction to XML", lessons: [] },
+      { num: 2, name: "Understanding XML External Entity Processing Vulnerabilities", lessons: [] },
+      { num: 3, name: "Testing for XXE", lessons: [] },
+      { num: 4, name: "Case Study: Apache OFBiz XXE Vulnerability", lessons: [0, 1, 2, 3, 4], durations: [35, 405, 83, 203, 311] },
+    ],
+  },
+  {
+    season: "09",
+    code: "SSTI",
+    name: "Server-side Template Injection",
+    chapters: [
+      { num: 1, name: "Templating Engines", lessons: [] },
+      { num: 2, name: "Twig - Discovery and Exploitation", lessons: [1, 2], durations: [333, 187] },
+      { num: 3, name: "Apache Freemarker - Discovery and Exploitation", lessons: [1, 2], durations: [262, 162] },
+      { num: 4, name: "Pug - Discovery and Exploitation", lessons: [1, 2], durations: [319, 183] },
+      { num: 5, name: "Jinja - Discovery and Exploitation", lessons: [1, 2], durations: [166, 68] },
+      { num: 6, name: "Mustache and Handlebars - Discovery and Exploitation", lessons: [1, 2], durations: [160, 152] },
+      { num: 7, name: "Halo - Case Study", lessons: [0, 2, 3], durations: [23, 421, 83] },
+      { num: 8, name: "Craft CMS with Sprout Forms - Case Study", lessons: [0, 2, 3], durations: [29, 412, 277] },
+    ],
+  },
+  {
+    season: "10",
+    code: "CI",
+    name: "Command Injection",
+    chapters: [
+      { num: 1, name: "Discovery of Command Injection", lessons: [2, 4], missing: [3], durations: [130, 194] },
+      { num: 2, name: "Dealing with Common Protections", lessons: [1, 2, 3], durations: [320, 407, 160] },
+      { num: 3, name: "Enumeration & Exploitation", lessons: [1, 2, 3, 4, 5, 6, 7, 9], missing: [8], durations: [196, 115, 117, 130, 227, 123, 242, 198] },
+      { num: 4, name: "Case Study - OpenNetAdmin (ONA)", lessons: [2, 3], durations: [128, 191] },
+    ],
+  },
+  {
+    season: "11",
+    code: "SSRF",
+    name: "Server-side Request Forgery",
+    chapters: [
+      { num: 1, name: "Introduction to SSRF", lessons: [1], durations: [185] },
+      { num: 2, name: "Testing for SSRF", lessons: [2, 3], durations: [180, 116] },
+      { num: 3, name: "Exploiting SSRF", lessons: [1, 4], missing: [2, 3], durations: [137, 699] },
+      { num: 4, name: "Case Study: Group Office", lessons: [2, 3], durations: [706, 321] },
+    ],
+  },
+  {
+    season: "12",
+    code: "IDOR",
+    name: "Insecure Direct Object Referencing",
+    chapters: [
+      { num: 1, name: "Introduction to IDOR", lessons: [] },
+      { num: 2, name: "Exploiting IDOR in the Sandbox", lessons: [2, 3, 4], durations: [127, 116, 408] },
+      { num: 3, name: "Case Study: OpenEMR", lessons: [2, 3], durations: [268, 147] },
+    ],
+  },
+  {
+    season: "13",
+    code: "ATP",
+    name: "Assembling the Pieces",
+    chapters: [
+      { num: 1, name: "Introduction to WEB-200 Challenge Machines", lessons: [] },
+      { num: 2, name: "Web Application Enumeration", lessons: [2, 3], durations: [177, 658] },
+      { num: 3, name: "Authentication Bypass", lessons: [1, 2], durations: [169, 282] },
+      { num: 4, name: "Remote Code Execution", lessons: [0, 1, 2, 3], durations: [57, 428, 235, 616] },
+    ],
+  },
+];

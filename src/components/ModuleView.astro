@@ -4,6 +4,7 @@ import { CODE_TO_DAY } from "@/data/studyPlan";
 import PageHeader from "@/components/PageHeader.astro";
 import ProgressBar from "@/components/ProgressBar.astro";
 import ChapterSection from "@/components/ChapterSection.astro";
+import { moduleTotalSeconds, fmtMinDuration } from "@/lib/progress";
 
 type Props = {
   module: CourseModule;
@@ -13,7 +14,8 @@ const slug = module.code.toLowerCase();
 const totalChapters = module.chapters.length;
 const totalLessons = module.chapters.reduce((sum, c) => sum + c.lessons.length, 0);
 const day = CODE_TO_DAY[module.code];
-const subtitle = `${totalChapters} chapter${totalChapters === 1 ? "" : "s"} · ${totalLessons} lesson${totalLessons === 1 ? "" : "s"}${day ? ` · Day ${day}` : ""}`;
+const modTotalSec = moduleTotalSeconds(module);
+const subtitle = `${totalChapters} chapter${totalChapters === 1 ? "" : "s"} · ${totalLessons} lesson${totalLessons === 1 ? "" : "s"}${day ? ` · Day ${day}` : ""}${modTotalSec > 0 ? ` · ${fmtMinDuration(modTotalSec)}` : ""}`;
 ---
 
 <article
@@ -36,8 +38,16 @@ const subtitle = `${totalChapters} chapter${totalChapters === 1 ? "" : "s"} · $
     subtitle={subtitle}
   >
     <Fragment slot="below-title">
-      <div class="mt-5">
+      <div class="mt-5 grid gap-2">
         <ProgressBar size="md" percent={0} id={`bar-${slug}`} />
+        {modTotalSec > 0 && (
+          <div class="flex items-baseline gap-1 font-mono text-tiny text-fg-muted">
+            <span data-module-watched-time={module.code}>0m</span>
+            <span class="text-fg-subtle">/</span>
+            <span>{fmtMinDuration(modTotalSec)}</span>
+            <span class="ml-1 text-fg-subtle">watched</span>
+          </div>
+        )}
       </div>
     </Fragment>
   </PageHeader>

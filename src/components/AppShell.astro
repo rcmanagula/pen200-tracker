@@ -9,6 +9,15 @@ const { title = "PEN-200 OSCP Progress Tracker" } = Astro.props;
 const base = import.meta.env.BASE_URL.endsWith("/")
   ? import.meta.env.BASE_URL
   : `${import.meta.env.BASE_URL}/`;
+
+const supabaseUrl = import.meta.env.PUBLIC_SUPABASE_URL ?? "";
+const supabaseKey = import.meta.env.PUBLIC_SUPABASE_ANON_KEY ?? "";
+const supabaseConfigured = Boolean(
+  supabaseUrl
+  && supabaseKey
+  && !String(supabaseUrl).includes("PASTE_")
+  && !String(supabaseKey).includes("PASTE_"),
+);
 ---
 
 <!doctype html>
@@ -34,6 +43,22 @@ const base = import.meta.env.BASE_URL.endsWith("/")
         }
       })();
     </script>
+    <!-- Pre-paint auth: hide the auth gate immediately if Supabase is unconfigured
+         (local mode), or if a Supabase session token already exists in localStorage. -->
+    <script is:inline define:vars={{ supabaseConfigured }}>
+      (() => {
+        try {
+          if (!supabaseConfigured) {
+            document.documentElement.dataset.preauth = "1";
+            return;
+          }
+          const hasSession = Object.keys(localStorage).some(
+            (k) => k.startsWith("sb-") && k.endsWith("-auth-token")
+          );
+          if (hasSession) document.documentElement.dataset.preauth = "1";
+        } catch {}
+      })();
+    </script>
   </head>
   <body>
     <a class="skip-link" href="#main">Skip to main content</a>
@@ -42,6 +67,11 @@ const base = import.meta.env.BASE_URL.endsWith("/")
 </html>
 
 <style is:global>
+  /* Pre-paint auth flash prevention: if the inline script detected a Supabase
+     session in localStorage, hide the auth gate before first paint. The
+     tracker JS will reverse this if the session turns out to be invalid. */
+  html[data-preauth="1"] #authGate { display: none; }
+
   /* Layout grid for the tracker app. AuthGate uses a full-viewport layout instead. */
   .app-grid {
     display: grid;

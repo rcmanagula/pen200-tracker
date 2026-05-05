@@ -53,6 +53,58 @@ export function chapterCounts(module: CourseModule, chapter: Chapter, progress: 
   };
 }
 
+export function fmtSecDuration(seconds: number): string {
+  if (!seconds) return "";
+  const m = Math.floor(seconds / 60);
+  const s = seconds % 60;
+  return `${m}:${s < 10 ? "0" : ""}${s}`;
+}
+
+export function fmtMinDuration(seconds: number): string {
+  if (!seconds) return "";
+  const h = Math.floor(seconds / 3600);
+  const m = Math.floor((seconds % 3600) / 60);
+  return h > 0 ? `${h}h${m > 0 ? ` ${m}m` : ""}` : `${m}m`;
+}
+
+export function chapterTotalSeconds(chapter: Chapter): number {
+  return (chapter.durations ?? []).reduce((sum, d) => sum + d, 0);
+}
+
+export function moduleTotalSeconds(module: CourseModule): number {
+  return module.chapters.reduce((sum, ch) => sum + chapterTotalSeconds(ch), 0);
+}
+
+export function courseTotalSeconds(course: CourseModule[]): number {
+  return course.reduce((sum, mod) => sum + moduleTotalSeconds(mod), 0);
+}
+
+export function watchedSeconds(course: CourseModule[], progress: ProgressState): number {
+  let total = 0;
+  course.forEach((mod) => {
+    mod.chapters.forEach((ch) => {
+      ch.lessons.forEach((lesson, idx) => {
+        if (progress[videoKey(mod.code, ch.num, lesson)]) {
+          total += ch.durations?.[idx] ?? 0;
+        }
+      });
+    });
+  });
+  return total;
+}
+
+export function watchedModuleSeconds(module: CourseModule, progress: ProgressState): number {
+  let total = 0;
+  module.chapters.forEach((ch) => {
+    ch.lessons.forEach((lesson, idx) => {
+      if (progress[videoKey(module.code, ch.num, lesson)]) {
+        total += ch.durations?.[idx] ?? 0;
+      }
+    });
+  });
+  return total;
+}
+
 export function calculateStats(course: CourseModule[], progress: ProgressState): TrackerStats {
   let watched = 0;
   let totalAvailable = 0;

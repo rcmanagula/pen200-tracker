@@ -1,5 +1,5 @@
 import { COURSE, type CourseModule } from "@/data/course";
-import { chapterCounts, moduleCounts, type ProgressState } from "@/lib/progress";
+import { chapterCounts, moduleCounts, watchedModuleSeconds, fmtMinDuration, type ProgressState } from "@/lib/progress";
 
 function setText(node: HTMLElement | null, text: string): void {
   if (node) node.textContent = text;
@@ -51,6 +51,12 @@ function refreshModuleHeader(module: CourseModule, progress: ProgressState): voi
   setText(eyebrowRight, `${counts.percent}%`);
   const bar = document.getElementById(`bar-${module.code.toLowerCase()}`);
   if (bar) bar.style.width = `${counts.percent}%`;
+
+  const watchedEl = document.querySelector<HTMLElement>(`[data-module-watched-time="${module.code}"]`);
+  if (watchedEl) {
+    const secs = watchedModuleSeconds(module, progress);
+    watchedEl.textContent = secs > 0 ? fmtMinDuration(secs) : "0m";
+  }
 }
 
 export function refreshAllModules(progress: ProgressState): void {

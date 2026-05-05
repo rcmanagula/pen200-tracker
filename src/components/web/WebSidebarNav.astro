@@ -1,0 +1,42 @@
+---
+import type { CourseModule } from "@/data/course";
+
+interface Props {
+  course: CourseModule[];
+}
+
+const { course } = Astro.props;
+---
+
+<nav aria-label="Course modules" class="flex-1 overflow-y-auto py-3">
+  <div class="px-4 pb-1.5 pt-2 text-tiny font-semibold uppercase tracking-wider text-fg-subtle">
+    Modules
+  </div>
+  <ul class="m-0 list-none p-0">
+    {course.map((module) => {
+      const total = module.chapters.reduce((sum, ch) => sum + ch.lessons.length, 0);
+      return (
+        <li>
+          <button
+            type="button"
+            class="grid w-full gap-1 px-4 py-2 text-left transition-colors hover:bg-surface-2"
+            data-web-nav-item={module.code}
+          >
+            <span class="flex items-center justify-between gap-2">
+              <span class="text-small text-fg-default">{module.name}</span>
+              <span class="font-mono text-tiny text-fg-muted">{total}</span>
+            </span>
+            <span class="font-mono text-tiny text-fg-subtle">{module.code}</span>
+            <span class="h-1 overflow-hidden rounded-full bg-surface-2">
+              <span
+                class="block h-full rounded-full bg-accent transition-[width] duration-300"
+                style="width: 0%"
+                data-web-nav-bar={module.code}
+              ></span>
+            </span>
+          </button>
+        </li>
+      );
+    })}
+  </ul>
+</nav>

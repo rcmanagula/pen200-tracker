@@ -1,7 +1,9 @@
 import { BSCP_TOTAL_LABS } from "@/data/bscp";
 import { COURSE } from "@/data/course";
+import { WEB200_COURSE } from "@/data/web200";
+import { WEB300_COURSE } from "@/data/web300";
 
-export type CourseId = "pen200" | "bscp";
+export type CourseId = "pen200" | "bscp" | "web200" | "web300";
 
 export interface Course {
   id: CourseId;
@@ -14,9 +16,15 @@ export interface Course {
   href: string;
 }
 
-const pen200Total = COURSE.reduce((moduleSum, module) => {
-  return moduleSum + module.chapters.reduce((chapterSum, chapter) => chapterSum + chapter.lessons.length, 0);
-}, 0);
+function totalLessons(course: typeof COURSE): number {
+  return course.reduce((moduleSum, module) => {
+    return moduleSum + module.chapters.reduce((chapterSum, chapter) => chapterSum + chapter.lessons.length, 0);
+  }, 0);
+}
+
+const pen200Total = totalLessons(COURSE);
+const web200Total = totalLessons(WEB200_COURSE);
+const web300Total = totalLessons(WEB300_COURSE);
 
 export const COURSES: Course[] = [
   {
@@ -38,5 +46,25 @@ export const COURSES: Course[] = [
     accentColor: "orange",
     totalItems: BSCP_TOTAL_LABS,
     href: "bscp",
+  },
+  {
+    id: "web200",
+    name: "OffSec WEB-200 (OSWA)",
+    shortName: "WEB-200",
+    description: "Web Attacks with Kali Linux - OSWA exam prep",
+    icon: "W2",
+    accentColor: "blue",
+    totalItems: web200Total,
+    href: "web200",
+  },
+  {
+    id: "web300",
+    name: "OffSec WEB-300 (OSWE)",
+    shortName: "WEB-300",
+    description: "Advanced Web Attacks and Exploitation - OSWE exam prep",
+    icon: "W3",
+    accentColor: "purple",
+    totalItems: web300Total,
+    href: "web300",
   },
 ];

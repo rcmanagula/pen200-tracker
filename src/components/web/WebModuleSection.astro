@@ -1,0 +1,131 @@
+---
+import type { CourseModule } from "@/data/course";
+import { getOrderedLessonItems, videoKey, fmtSecDuration, fmtMinDuration, chapterTotalSeconds, moduleTotalSeconds } from "@/lib/progress";
+
+interface Props {
+  module: CourseModule;
+}
+
+const { module } = Astro.props;
+const totalLessons = module.chapters.reduce((sum, ch) => sum + ch.lessons.length, 0);
+const totalChapters = module.chapters.length;
+const modTotalSec = moduleTotalSeconds(module);
+---
+
+<section
+  class="border-b border-default py-4 last:border-b-0"
+  data-web-module={module.code}
+>
+  <button
+    type="button"
+    class="flex w-full items-center gap-3 rounded-md px-2 py-2 text-left transition-colors hover:bg-surface-2"
+    aria-expanded="false"
+    data-web-module-toggle={module.code}
+  >
+    <svg
+      aria-hidden="true"
+      viewBox="0 0 24 24"
+      width="16"
+      height="16"
+      class="shrink-0 text-fg-muted transition-transform"
+      data-web-module-chevron={module.code}
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    >
+      <path d="m6 9 6 6 6-6" />
+    </svg>
+    <span class="grid flex-1 gap-1">
+      <span class="flex items-baseline gap-2">
+        <span class="font-mono text-tiny text-fg-subtle">[{module.code}]</span>
+        <span class="text-h3 font-semibold text-fg-default">{module.name}</span>
+      </span>
+      <span class="text-tiny text-fg-subtle">
+        {totalChapters} chapter{totalChapters === 1 ? "" : "s"} · {totalLessons} lesson{totalLessons === 1 ? "" : "s"}
+        {modTotalSec > 0 && <span>· {fmtMinDuration(modTotalSec)}</span>}
+      </span>
+      <span class="h-1.5 overflow-hidden rounded-full bg-surface-2">
+        <span
+          class="block h-full rounded-full bg-accent transition-[width] duration-300"
+          style="width: 0%"
+          data-web-module-bar={module.code}
+        ></span>
+      </span>
+    </span>
+    <span class="font-mono text-tiny text-fg-muted" data-web-module-count={module.code}>0/{totalLessons}</span>
+  </button>
+
+  <div class="hidden pt-3" data-web-module-body={module.code}>
+    {module.chapters.map((chapter) => {
+      const ordered = getOrderedLessonItems(chapter);
+      const chTotal = chapter.lessons.length;
+      const chTotalSec = chapterTotalSeconds(chapter);
+      return (
+        <section
+          class="border-t border-default py-4 first:border-t-0"
+          data-web-chapter
+          data-web-module={module.code}
+          data-web-chapter-num={chapter.num}
+        >
+          <header class="mb-2 flex items-center justify-between gap-3 px-2">
+            <h4 class="text-small font-semibold text-fg-default">
+              <span class="mr-2 font-mono text-tiny text-fg-subtle">CH{String(chapter.num).padStart(2, "0")}</span>
+              {chapter.name}
+              {chTotalSec > 0 && (
+                <span class="ml-2 font-mono text-tiny font-normal text-fg-subtle">{fmtMinDuration(chTotalSec)}</span>
+              )}
+            </h4>
+            <span class="font-mono text-tiny text-fg-muted" data-web-chapter-status>
+              {chTotal === 0 ? "n/a" : `0/${chTotal}`}
+            </span>
+          </header>
+
+          {ordered.length === 0 ? (
+            <div class="px-2 text-tiny italic text-fg-subtle">No lessons in this chapter.</div>
+          ) : (
+            <div class="grid gap-0">
+              {ordered.map((item) => {
+                const key = videoKey(module.code, chapter.num, item.num);
+                const lessonLabel = `${String(chapter.num).padStart(2, "0")}.${String(item.num).padStart(2, "0")}`;
+                const lessonIdx = chapter.lessons.indexOf(item.num);
+                const durSec = item.available && lessonIdx >= 0 ? (chapter.durations?.[lessonIdx] ?? 0) : 0;
+                return (
+                  <label
+                    class={`group flex items-center gap-3 -mx-3 rounded-md px-3 py-2 transition-colors duration-[80ms] hover:bg-surface-2 ${item.available ? "cursor-pointer" : "pointer-events-none cursor-not-allowed opacity-60"}`}
+                    data-web-lesson
+                    data-key={key}
+                  >
+                    <input
+                      type="checkbox"
+                      class="h-4 w-4 shrink-0 cursor-pointer accent-accent"
+                      data-web-checkbox
+                      data-key={key}
+                      data-web-module={module.code}
+                      disabled={!item.available}
+                    />
+                    <span class="min-w-[3.5rem] font-mono text-tiny text-fg-subtle">{lessonLabel}</span>
+                    <span class="flex-1 text-small text-fg-default group-has-[input:checked]:text-fg-muted">
+                      Lesson {item.num}{item.available ? "" : " (n/a)"}
+                    </span>
+                    {durSec > 0 && (
+                      <span class="font-mono text-tiny text-fg-subtle group-has-[input:checked]:text-success-muted">
+                        {fmtSecDuration(durSec)}
+                      </span>
+                    )}
+                  </label>
+                );
+              })}
+            </div>
+          )}
+        </section>
+      );
+    })}
+
+    <footer class="mt-4 flex flex-wrap items-center gap-3 px-2">
+      <button type="button" class="btn btn-ghost" data-web-module-mark-all={module.code}>Mark all watched</button>
+      <button type="button" class="btn btn-ghost btn-danger" data-web-module-reset={module.code}>Reset module progress</button>
+    </footer>
+  </div>
+</section>

@@ -1,0 +1,25 @@
+---
+import AppShell from "@/components/AppShell.astro";
+import AuthGate from "@/components/AuthGate.astro";
+import Toast from "@/components/Toast.astro";
+import WebMainPane from "@/components/web/WebMainPane.astro";
+import WebSidebar from "@/components/web/WebSidebar.astro";
+import { WEB200_COURSE } from "@/data/web200";
+---
+
+<AppShell title="WEB-200 OSWA Progress Tracker">
+  <AuthGate shortName="WEB-200" subtitle="OSWA Tracker" />
+  <div id="trackerApp" class="app-grid">
+    <WebSidebar course={WEB200_COURSE} shortName="WEB-200" subtitle="OSWA Tracker" />
+    <WebMainPane
+      course={WEB200_COURSE}
+      eyebrow="Web Attacks with Kali Linux"
+      title="WEB-200 OSWA"
+      subtitle={`${WEB200_COURSE.length} modules covering offensive web application techniques.`}
+    />
+  </div>
+  <Toast />
+  <script>
+    import "@/lib/web200_tracker";
+  </script>
+</AppShell>

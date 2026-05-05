@@ -1,14 +1,15 @@
 ---
 import type { CourseModule } from "@/data/course";
 import type { LessonItem } from "@/lib/progress";
-import { videoKey } from "@/lib/progress";
+import { videoKey, fmtSecDuration } from "@/lib/progress";
 
 type Props = {
   module: CourseModule;
   chapterNum: number;
   item: LessonItem;
+  durSec?: number;
 };
-const { module, chapterNum, item } = Astro.props;
+const { module, chapterNum, item, durSec = 0 } = Astro.props;
 const key = videoKey(module.code, chapterNum, item.num);
 const lessonNum = `${String(chapterNum).padStart(2, "0")}.${String(item.num).padStart(2, "0")}`;
 ---
@@ -33,5 +34,9 @@ const lessonNum = `${String(chapterNum).padStart(2, "0")}.${String(item.num).pad
   <span class="flex-1 text-small text-fg-default group-has-[.lesson-check:checked]:text-fg-muted">
     Lesson {item.num}{item.available ? "" : " (n/a)"}
   </span>
-  <span class="font-mono text-tiny text-fg-subtle">{key}</span>
+  {durSec > 0 && (
+    <span class="font-mono text-tiny text-fg-subtle group-has-[.lesson-check:checked]:text-success-muted">
+      {fmtSecDuration(durSec)}
+    </span>
+  )}
 </label>

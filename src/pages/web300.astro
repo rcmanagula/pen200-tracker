@@ -1,0 +1,25 @@
+---
+import AppShell from "@/components/AppShell.astro";
+import AuthGate from "@/components/AuthGate.astro";
+import Toast from "@/components/Toast.astro";
+import WebMainPane from "@/components/web/WebMainPane.astro";
+import WebSidebar from "@/components/web/WebSidebar.astro";
+import { WEB300_COURSE } from "@/data/web300";
+---
+
+<AppShell title="WEB-300 OSWE Progress Tracker">
+  <AuthGate shortName="WEB-300" subtitle="OSWE Tracker" />
+  <div id="trackerApp" class="app-grid">
+    <WebSidebar course={WEB300_COURSE} shortName="WEB-300" subtitle="OSWE Tracker" />
+    <WebMainPane
+      course={WEB300_COURSE}
+      eyebrow="Advanced Web Attacks and Exploitation (AWAE)"
+      title="WEB-300 OSWE"
+      subtitle={`${WEB300_COURSE.length} modules covering source-code review and exploit chains.`}
+    />
+  </div>
+  <Toast />
+  <script>
+    import "@/lib/web300_tracker";
+  </script>
+</AppShell>

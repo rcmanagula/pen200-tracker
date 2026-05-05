@@ -1,0 +1,21 @@
+---
+import type { CourseModule } from "@/data/course";
+import SidebarBrand from "@/components/SidebarBrand.astro";
+import SidebarFooter from "@/components/SidebarFooter.astro";
+import WebSidebarNav from "@/components/web/WebSidebarNav.astro";
+
+interface Props {
+  course: CourseModule[];
+  shortName: string;
+  subtitle: string;
+}
+
+const { course, shortName, subtitle } = Astro.props;
+---
+
+<aside data-sidebar aria-label="Modules and account" class="flex flex-col border-r border-default bg-surface">
+  <SidebarBrand shortName={shortName} subtitle={subtitle} />
+  <WebSidebarNav course={course} />
+  <SidebarFooter />
+</aside>
+<div id="drawerBackdrop" aria-hidden="true"></div>

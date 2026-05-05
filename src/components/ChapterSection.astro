@@ -1,6 +1,6 @@
 ---
 import type { Chapter, CourseModule } from "@/data/course";
-import { getOrderedLessonItems } from "@/lib/progress";
+import { getOrderedLessonItems, chapterTotalSeconds, fmtMinDuration } from "@/lib/progress";
 import LessonRow from "@/components/LessonRow.astro";
 
 type Props = {
@@ -11,6 +11,7 @@ const { module, chapter } = Astro.props;
 const orderedLessons = getOrderedLessonItems(chapter);
 const headingId = `ch-${module.code.toLowerCase()}-${chapter.num}`;
 const totalAvailable = chapter.lessons.length;
+const chTotalSec = chapterTotalSeconds(chapter);
 ---
 
 <section
@@ -24,6 +25,9 @@ const totalAvailable = chapter.lessons.length;
     <h3 id={headingId} class="text-h3 font-semibold text-fg-default">
       <span class="font-mono text-tiny text-fg-subtle mr-2">{`${String(chapter.num).padStart(2, "0")}`}</span>
       {chapter.name}
+      {chTotalSec > 0 && (
+        <span class="ml-2 font-mono text-tiny font-normal text-fg-subtle">{fmtMinDuration(chTotalSec)}</span>
+      )}
     </h3>
     <span class="flex items-center gap-2 text-tiny font-semibold text-fg-muted">
       <span data-chapter-glyph aria-hidden="true" class="inline-block h-3 w-3 rounded-full border-2 border-fg-subtle"></span>
@@ -35,9 +39,11 @@ const totalAvailable = chapter.lessons.length;
     <div class="text-tiny text-fg-subtle italic">No lessons in this chapter.</div>
   ) : (
     <div class="grid gap-0">
-      {orderedLessons.map((item) => (
-        <LessonRow module={module} chapterNum={chapter.num} item={item} />
-      ))}
+      {orderedLessons.map((item) => {
+        const lessonIdx = chapter.lessons.indexOf(item.num);
+        const durSec = item.available && lessonIdx >= 0 ? (chapter.durations?.[lessonIdx] ?? 0) : 0;
+        return <LessonRow module={module} chapterNum={chapter.num} item={item} durSec={durSec} />;
+      })}
     </div>
   )}
 </section>
